@@ -23,7 +23,8 @@ export default {
     Toolbar
   },
   data: () => ({
-    showDialogMsg: true
+    showDialogMsg: true,
+    datas:[]
   })
 }
 </script>

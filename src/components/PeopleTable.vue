@@ -10,7 +10,7 @@
         <v-spacer></v-spacer>
         <v-dialog v-model="showDialogMsg" persistent max-width="500px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+            <!-- <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn> -->
           </template>
           <v-card>
             <v-card-title class="headline">Edit Information</v-card-title>
@@ -24,8 +24,13 @@
                   textarea
                   height="200"
                 ></v-text-field>
-                <v-text-field name="name" label="Post as .. " v-model="editedItem.firstname"></v-text-field>
-                <!-- <v-select :items="userSelector" v-model="editedItem.firstname" label="Post as .."></v-select> -->
+                <!-- <v-text-field name="name" label="Post as .. " v-model="editedItem.firstname"></v-text-field> -->
+                <v-select
+                  :items="userSelector"
+                  v-model="editedItem.firstname"
+                  label="Post as .."
+                  placeholder="กรอกด้วย"
+                ></v-select>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -35,6 +40,27 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+      </v-toolbar>
+      <v-toolbar flat color="white">
+        <v-layout row>
+          <v-flex xs3>
+            <v-select
+              :items="userSelector"
+              v-model="editedItem.firstname"
+              label="Post as .."
+              placeholder="กรอกด้วย"
+            ></v-select>
+          </v-flex>
+          <v-flex xs9>
+            <v-text-field
+              label="Message"
+              hide-details
+              name="name"
+              v-model="editedItem.tel"
+              @keydown="eventUpdate"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
       </v-toolbar>
     </template>
     <template v-slot:item.action="{item}">
@@ -46,9 +72,10 @@
   </v-card>-->
 </template>
 <script>
-import Axios from 'axios'
+import Axios from "axios";
 export default {
-  name: 'PeopleTable',
+  name: "PeopleTable",
+  propsData: {},
   data: () => ({
     userSelector: [],
     userSelected: null,
@@ -57,58 +84,66 @@ export default {
     editedIndex: -1,
     persons: [],
     headers: [
-      { text: 'Firstname', value: 'firstname' },
-      { text: 'Telephone', value: 'tel' },
-      { text: 'Actions', value: 'action', sortable: false }
+      { text: "Firstname", value: "firstname" },
+      { text: "Telephone", value: "tel" },
+      { text: "Actions", value: "action", sortable: false }
     ]
   }),
   methods: {
-    closeItem () {
-      this.showDialogMsg = false
-      let cleanObj = {}
+    eventUpdate(event) {
+      if (event.key == "Enter") this.updateItem();
+    },
+    closeItem() {
+      this.showDialogMsg = false;
+      let cleanObj = {};
       for (const key in this.editedItem) {
-        cleanObj[key] = null
+        cleanObj[key] = null;
       }
-      console.log(cleanObj)
-      this.editedItem = Object.assign({}, cleanObj)
-      this.editedIndex = -1
+      console.log(cleanObj);
+      this.editedItem = Object.assign({}, cleanObj);
+      this.editedIndex = -1;
     },
-    edit (item) {
-      this.editedIndex = this.persons.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.showDialogMsg = true
-      console.log(item)
+    edit(item) {
+      this.editedIndex = this.persons.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.showDialogMsg = true;
+      console.log(item);
     },
-    async deleteItem (item) {
-      this.persons.splice(this.persons.indexOf(item), 1)
-      await Axios.delete(
-        'http://labkk.ga:3000/person/' + item._id
-      ).catch(() => alert('error'))
-      this.loadPeople()
+    async deleteItem(item) {
+      this.persons.splice(this.persons.indexOf(item), 1);
+      await Axios.delete("http://labkk.ga:3000/person/" + item._id).catch(() =>
+        alert("error")
+      );
+      this.loadPeople();
     },
-    async updateItem () {
+    async updateItem() {
       if (this.editedIndex === -1) {
-        await Axios.post('http://labkk.ga:3000/person', this.editedItem)
+        await Axios.post("http://labkk.ga:3000/person", this.editedItem);
       } else {
         await Axios.put(
-          'http://labkk.ga:3000/person/' + this.editedItem._id,
+          "http://labkk.ga:3000/person/" + this.editedItem._id,
           this.editedItem
-        )
+        );
       }
-      this.loadPeople()
+      this.editedItem.tel = "";
+      this.loadPeople();
     },
-    async loadPeople () {
-      let response = await Axios.get('http://labkk.ga:3000/persons')
-      this.persons = response.data
+    async loadPeople(dialog) {
+      let response = await Axios.get("http://labkk.ga:3000/persons");
+      this.persons = response.data.reverse();
       this.userSelector = Array.from(
         new Set(response.data.map(x => x.firstname))
-      )
-      this.showDialogMsg = false
-      console.log(this.persons)
+      );
+      if (typeof dialog === "undefined") this.showDialogMsg = false;
+      console.log(dialog);
     }
   },
-  mounted () {
-    this.loadPeople()
+  mounted() {
+    this.loadPeople(true);
+    setInterval(() => {
+      this.loadPeople(true)
+
+    }, 1000);
   }
-}
+};
 </script>
