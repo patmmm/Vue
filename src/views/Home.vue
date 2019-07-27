@@ -1,13 +1,25 @@
 <template>
-  <HelloWorld />
+  <v-content>
+    <Toolbar />
+    <v-container>
+
+    </v-container>
+  </v-content>
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld'
-
+import Toolbar from '../components/Toolbar'
+import Axios from 'axios'
 export default {
   components: {
-    HelloWorld
+    Toolbar
+  },
+  data: () => ({
+    persons: {}
+  }),
+  mounted: async function (params) {
+    let response = await Axios.get('http://labkk.ga:3000/persons')
+    this.persons = response.data
   }
 }
 </script>
