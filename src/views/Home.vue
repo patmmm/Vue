@@ -1,25 +1,29 @@
 <template>
   <v-content>
     <Toolbar />
-    <v-container>
-
+    <v-container grid-list-xl>
+      <v-layout column wrap>
+        <v-flex>
+          <PeopleTable />
+        </v-flex>
+        <v-flex>
+        </v-flex>
+      </v-layout>
     </v-container>
   </v-content>
 </template>
 
 <script>
+import PeopleTable from '../components/PeopleTable.vue'
 import Toolbar from '../components/Toolbar'
-import Axios from 'axios'
+
 export default {
   components: {
+    PeopleTable,
     Toolbar
   },
   data: () => ({
-    persons: {}
-  }),
-  mounted: async function (params) {
-    let response = await Axios.get('http://labkk.ga:3000/persons')
-    this.persons = response.data
-  }
+    showDialogMsg: true
+  })
 }
 </script>
