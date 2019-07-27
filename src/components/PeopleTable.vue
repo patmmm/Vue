@@ -4,7 +4,7 @@
 
   <v-data-table :headers="headers" :items="persons" class="elevation-1">
     <template v-slot:top>
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="primary">
         <v-toolbar-title>Informaton</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -41,7 +41,7 @@
           </v-card>
         </v-dialog>
       </v-toolbar>
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="primary">
         <v-layout row>
           <v-flex xs3>
             <v-select
